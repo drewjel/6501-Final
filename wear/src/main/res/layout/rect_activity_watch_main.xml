@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".WatchMainActivity"
+    tools:deviceIds="wear_round">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/tvStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:text="" />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/btnStartStop"
+            android:layout_width="wrap_content"
+            android:layout_height="88dp"
+            android:layout_margin="0dp"
+            android:layout_marginBottom="7dp"
+            android:layout_marginLeft="0dp"
+            android:layout_marginRight="3dp"
+            android:layout_marginTop="0dp"
+            android:layout_weight="0.5"
+            android:onClick="btnClick"
+            android:text="" />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/btnRefresh"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="0dp"
+            android:layout_marginBottom="0dp"
+            android:layout_marginLeft="0dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_weight="0.5"
+            android:onClick="btnClick"
+            android:text="Ref" />
+
+        <Button
+            android:id="@+id/btnData"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="0dp"
+            android:layout_marginBottom="0dp"
+            android:layout_marginLeft="0dp"
+            android:layout_marginRight="0dp"
+            android:layout_marginTop="5dp"
+            android:layout_weight="0.5"
+            android:onClick="btnClick"
+            android:text="Data" />
+        <Button
+            android:id="@+id/btnTag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="0dp"
+            android:layout_marginBottom="0dp"
+            android:layout_marginLeft="0dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_weight="0.5"
+            android:onClick="btnClick"
+            android:text="Tag" />
+
+    </LinearLayout>
+
+
+
+</LinearLayout>
