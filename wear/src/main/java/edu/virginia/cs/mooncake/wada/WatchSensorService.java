@@ -12,6 +12,8 @@ import android.os.IBinder;
 import android.os.PowerManager;
 import android.util.Log;
 
+import java.nio.FloatBuffer;
+
 import edu.virginia.cs.mooncake.wada.utils.FileUtil;
 import edu.virginia.cs.mooncake.wada.utils.SharedPrefUtil;
 
@@ -26,6 +28,22 @@ public class WatchSensorService extends Service implements SensorEventListener {
     long startTime;
     String file_tag;
     int sensorType;
+
+    static final int senMax = 100;
+    float[] x_cache = new float[senMax];
+    float[] y_cache = new float[senMax];
+    float[] z_cache = new float[senMax];
+    int sensorCounter = 0;
+
+
+    static final int secMax = 5;
+    float[] x_mean = new float[secMax];
+    float[] y_mean = new float[secMax];
+    float[] z_mean = new float[secMax];
+    float[] x_dev = new float[secMax];
+    float[] y_dev = new float[secMax];
+    float[] z_dev = new float[secMax];
+    int secondCounter = 0;
 
     @Override
     public void onCreate() {
@@ -51,10 +69,10 @@ public class WatchSensorService extends Service implements SensorEventListener {
 
         rate = SensorManager.SENSOR_DELAY_GAME;
         mSensorManager.registerListener(this, mAccelerometer, rate);
-        mSensorManager.registerListener(this, mGravity, rate);
-        mSensorManager.registerListener(this, mGyroscope, rate);
-        mSensorManager.registerListener(this, mRotationVector, rate);
-        mSensorManager.registerListener(this, mMagnetometer, rate);
+        //mSensorManager.registerListener(this, mGravity, rate);
+        //mSensorManager.registerListener(this, mGyroscope, rate);
+        //mSensorManager.registerListener(this, mRotationVector, rate);
+        //mSensorManager.registerListener(this, mMagnetometer, rate);
 
         startTime = System.currentTimeMillis();
         strBuilder = new StringBuilder();
@@ -66,10 +84,16 @@ public class WatchSensorService extends Service implements SensorEventListener {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent != null && intent.hasExtra("stop")) {
-            stopSelf(startId);
+            //stopSelf(startId);
+
+
+            //turn off sensor
         } else if (intent != null && intent.hasExtra("start")) {
-            file_tag = intent.getStringExtra("start");
-            file_tag = file_tag + ".wada";
+            //file_tag = intent.getStringExtra("start");
+            //file_tag = file_tag + ".wada";
+
+
+            //turn on sensor
         }
 
         context = this.getApplicationContext();
@@ -93,6 +117,57 @@ public class WatchSensorService extends Service implements SensorEventListener {
         }
     }
 
+
+    public void performClassifiction()
+    {
+        FloatBuffer.allocate(6*secMax);
+    }
+
+    public void processDataAndClassify()
+    {
+        x_mean[secondCounter] = 0;
+        y_mean[secondCounter] = 0;
+        z_mean[secondCounter] = 0;
+
+        x_dev[secondCounter] = 0;
+        y_dev[secondCounter] = 0;
+        z_dev[secondCounter] = 0;
+
+        for(int i = 0; i<senMax; i++)
+        {
+            x_mean[secondCounter] += x_cache[i];
+            y_mean[secondCounter] += y_cache[i];
+            y_mean[secondCounter] += z_cache[i];
+
+        }
+
+        x_mean[secondCounter] /= senMax;
+        y_mean[secondCounter] /= senMax;
+        z_mean[secondCounter] /= senMax;
+
+        for(int i = 0; i<senMax; i++)
+        {
+            x_dev[secondCounter] += (x_cache[i] - x_mean[secondCounter])*(x_cache[i] - x_mean[secondCounter]);
+            y_dev[secondCounter] += (y_cache[i] - y_mean[secondCounter])* (y_cache[i] - y_mean[secondCounter]);
+            y_dev[secondCounter] += (z_cache[i] - z_mean[secondCounter])*(z_cache[i] - z_mean[secondCounter]);
+        }
+
+        x_dev[secondCounter] /= senMax;
+        y_dev[secondCounter] /= senMax;
+        z_dev[secondCounter] /= senMax;
+
+        secondCounter++;
+        secondCounter%=secMax;
+
+        if(secondCounter == 0)
+        {
+            performClassifiction();
+        }
+
+
+    }
+
+
     @Override
     public void onSensorChanged(SensorEvent event) {
         sensorType = event.sensor.getType();
@@ -109,10 +184,15 @@ public class WatchSensorService extends Service implements SensorEventListener {
         strBuilder.append(event.values[2]);
         strBuilder.append("\n");
 
-        count++;
-        //Log.i("MyTAG", "Count: " + count);
-        if (count >= maxCount)
-            sendData();
+        this.x_cache[curCounter] = event.values[0];
+        this.y_cache[curCounter] = event.values[1];
+        this.z_cache[curCounter] = event.values[2];
+
+        curCounter++;
+        curCounter %= senMax;
+
+        if (curCounter ==0)
+            processDataAndClassify();
 
     }
 

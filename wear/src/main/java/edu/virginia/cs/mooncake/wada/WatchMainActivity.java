@@ -93,7 +93,7 @@ public class WatchMainActivity extends Activity {
                 btn.setText("Stopped... Press Refresh");
                 btn.setBackgroundResource(R.color.grey);
             }
-        } else if (v.getId() == R.id.btnRefresh) {
+        /*} else if (v.getId() == R.id.btnRefresh) {
             refreshStatus();
 
         } else if (v.getId() == R.id.btnData) {
@@ -101,7 +101,7 @@ public class WatchMainActivity extends Activity {
         } else if (v.getId() == R.id.btnTag) {
             startActivity(new Intent(this, TagActivity.class));
         }
-
+        */
 
     }
 
