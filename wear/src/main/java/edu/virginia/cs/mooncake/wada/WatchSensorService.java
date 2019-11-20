@@ -12,6 +12,8 @@ import android.os.IBinder;
 import android.os.PowerManager;
 import android.util.Log;
 
+import org.pytorch.Tensor;
+
 import java.nio.FloatBuffer;
 
 import edu.virginia.cs.mooncake.wada.utils.FileUtil;
@@ -120,7 +122,36 @@ public class WatchSensorService extends Service implements SensorEventListener {
 
     public void performClassifiction()
     {
-        FloatBuffer.allocate(6*secMax);
+        FloatBuffer buffer = FloatBuffer.allocate(6*secMax);
+        float[] data = new float[6*secMax];
+        for(int i = 0;i<secMax;i++)
+        {
+            data[i*6 + 0] = x_mean[i];
+            data[i*6 + 1] = y_mean[i];
+            data[i*6 + 2] = z_mean[i];
+            data[i*6 + 3] = x_dev[i];
+            data[i*6 + 4] = y_dev[i];
+            data[i*6 + 5] = z_dev[i];
+
+        }
+
+        buffer.put(data);
+
+
+        // getting tensor content as java array of floats
+        final float[] scores = outputTensor.getDataAsFloatArray();
+
+        final Tensor tensor = Tensor.fromBlob(buffer, new long[]{1, secMax, 6});
+
+
+        Module module = Module.load("model.pt");
+
+        final Tensor outputTensor = module.forward(IValue.from(tensor)).toTensor();
+
+
+        final int[] classification = outputTensor.getDataAsIntArray();
+
+
     }
 
     public void processDataAndClassify()
